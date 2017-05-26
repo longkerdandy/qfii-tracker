@@ -1,0 +1,12 @@
+apply plugin: 'application'
+
+mainClassName = "com.github.longkerdandy.qfii.hkex.Tracker"
+
+// If your application requires a specific set of JVM settings or system properties, you can configure the applicationDefaultJvmArgs property.
+// These JVM arguments are applied to the run task and also considered in the generated start scripts of your distribution.
+applicationDefaultJvmArgs = ["-Dlogback.configurationFile=config/logback.xml"]
+
+dependencies {
+    // jsoup
+    compile 'org.jsoup:jsoup:1.10.2'
+}

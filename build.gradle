@@ -1,14 +1,67 @@
-group 'com.github.longkerdandy'
-version '1.0.0.Final-SNAPSHOT'
+apply plugin: 'com.github.ben-manes.versions'
 
-apply plugin: 'java'
+subprojects {
 
-sourceCompatibility = 1.8
+    apply plugin: 'java'
+    apply plugin: 'maven'
 
-repositories {
-    mavenCentral()
+    // Group Id
+    group 'com.github.longkerdandy'
+
+    // Version
+    version '1.1.0.Beta1-SNAPSHOT'
+
+    // JDK
+    sourceCompatibility = 1.8
+
+    // Encoding
+    tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }
+
+    // Maven Repository
+    repositories {
+        jcenter()
+    }
+
+    // Dependencies
+    dependencies {
+        // apache commons
+        compile 'org.apache.commons:commons-lang3:3.5'
+        compile 'commons-configuration:commons-configuration:1.10'
+
+        // logger
+        compile 'org.slf4j:slf4j-api:1.7.25'
+        compile 'ch.qos.logback:logback-core:1.2.3'
+        compile 'ch.qos.logback:logback-classic:1.2.3'
+
+        // junit
+        testCompile 'junit:junit:4.12'
+
+        // mock
+        compile 'org.mockito:mockito-all:1.10.19'
+        compile 'org.easymock:easymock:3.4'
+    }
 }
 
-dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+// gradle version plugin
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.14.0'
+    }
+}
+
+dependencyUpdates.resolutionStrategy = {
+    componentSelection { rules ->
+        rules.all { ComponentSelection selection ->
+            boolean rejected = ['alpha', 'beta', 'rc', 'cr', 'm'].any { qualifier ->
+                selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
+            }
+            if (rejected) {
+                selection.reject('Release candidate')
+            }
+        }
+    }
 }

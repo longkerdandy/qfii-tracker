@@ -1,2 +1,3 @@
 rootProject.name = 'qfii-tracker'
+include 'hkex-qfii-tracker'
 
