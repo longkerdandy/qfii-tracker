@@ -1,31 +1,36 @@
 package com.github.longkerdandy.qfii.hkex.spider;
 
-import com.github.longkerdandy.qfii.hkex.model.StockShareholding;
+import com.github.longkerdandy.qfii.hkex.storage.InfluxDBStorage;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Spider for HKEX's Shanghai StockShareholding Connect Disclosure
  */
 public class ShanghaiConnectSpider extends ConnectSpider {
 
-  private String url = "http://sc.hkexnews.hk/TuniS/www.hkexnews.hk/sdw/search/mutualmarket_c.aspx?t=sh";
-  private int timeout = 3000;
+  private static final String URL = "http://sc.hkexnews.hk/TuniS/www.hkexnews.hk/sdw/search/mutualmarket_c.aspx?t=sh";
+  private final int timeout;
+  private final InfluxDBStorage storage;
 
-  public ShanghaiConnectSpider(int timeout) {
+  public ShanghaiConnectSpider(int timeout, InfluxDBStorage storage) {
     this.timeout = timeout;
+    this.storage = storage;
   }
 
-  public List<StockShareholding> fetch(Date queryDate) throws IOException, ParseException {
-    return fetch(queryDate, this.url, this.timeout);
+  public void fetchRangeAndUpdate(Date startDate, Date endDate) throws IOException, ParseException {
+    fetchRangeAndUpdate(startDate, endDate, URL, this.timeout, this.storage);
+  }
+
+  public void fetchAndUpdate(Date queryDate) throws IOException, ParseException {
+    fetchAndUpdate(queryDate, URL, this.timeout, this.storage);
   }
 
   @Override
   public String adjustCode(String code) {
-    if (code.startsWith("90")) {
-      code = code.replaceFirst("90", "600");
+    if (code.startsWith("9")) {
+      code = code.replaceFirst("9", "60");
     }
     return code;
   }

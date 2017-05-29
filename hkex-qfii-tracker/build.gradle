@@ -7,6 +7,12 @@ mainClassName = "com.github.longkerdandy.qfii.hkex.Tracker"
 applicationDefaultJvmArgs = ["-Dlogback.configurationFile=config/logback.xml"]
 
 dependencies {
+    // apache commons
+    compile 'commons-cli:commons-cli:1.4'
+
     // jsoup
     compile 'org.jsoup:jsoup:1.10.2'
+
+    // influxdb
+    compile 'org.influxdb:influxdb-java:2.5'
 }

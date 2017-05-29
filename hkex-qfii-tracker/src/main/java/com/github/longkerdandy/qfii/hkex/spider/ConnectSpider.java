@@ -1,6 +1,7 @@
 package com.github.longkerdandy.qfii.hkex.spider;
 
 import com.github.longkerdandy.qfii.hkex.model.StockShareholding;
+import com.github.longkerdandy.qfii.hkex.storage.InfluxDBStorage;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -18,6 +19,20 @@ import org.jsoup.select.Elements;
  * Base Spider Class
  */
 public abstract class ConnectSpider {
+
+  public void fetchRangeAndUpdate(Date startDate, Date endDate, String url, int timeout, InfluxDBStorage storage)
+      throws IOException, ParseException {
+    while (startDate.before(endDate) || startDate.equals(endDate)) {
+      fetchAndUpdate(startDate, url, timeout, storage);
+      startDate = DateUtils.addDays(startDate, 1);
+    }
+  }
+
+  public void fetchAndUpdate(Date queryDate, String url, int timeout, InfluxDBStorage storage)
+      throws IOException, ParseException {
+    List<StockShareholding> stockShareholdings = fetch(queryDate, url, timeout);
+    update(stockShareholdings, storage);
+  }
 
   public List<StockShareholding> fetch(Date queryDate, String url, int timeout) throws IOException, ParseException {
     // fetch html from HKEX web site
@@ -61,6 +76,10 @@ public abstract class ConnectSpider {
     }
 
     return stockShareholdings;
+  }
+
+  public void update(List<StockShareholding> stockShareholdings, InfluxDBStorage storage) {
+    storage.saveShareholdings(stockShareholdings);
   }
 
   public abstract String adjustCode(String code);
