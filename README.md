@@ -1,2 +1,2 @@
-# qfii-tracker
-China stock marcket QFII tracker based on HKEX shareholding disclosures  
+# QFII Tracker
+China stocks market QFII tracker based on HKEX shareholding disclosures
