@@ -26,6 +26,11 @@ public class InfluxDBStorage {
     this.influxDB.createDatabase(DB_NAME);
   }
 
+  public void clear() {
+    this.influxDB.deleteDatabase(DB_NAME);
+    this.influxDB.createDatabase(DB_NAME);
+  }
+
   public void saveShareholdings(List<StockShareholding> stockShareholdings) {
     BatchPoints batchPoints = BatchPoints
         .database(DB_NAME)
