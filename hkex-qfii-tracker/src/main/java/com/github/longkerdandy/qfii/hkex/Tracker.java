@@ -1,9 +1,8 @@
 package com.github.longkerdandy.qfii.hkex;
 
-import com.github.longkerdandy.qfii.hkex.parser.ConnectParser;
 import com.github.longkerdandy.qfii.hkex.parser.ShanghaiConnectParser;
 import com.github.longkerdandy.qfii.hkex.parser.ShenzhenConnectParser;
-import com.github.longkerdandy.qfii.hkex.storage.InfluxDBStorage;
+import com.github.longkerdandy.qfii.hkex.storage.PostgreStorage;
 import java.util.Date;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -33,8 +32,8 @@ public class Tracker {
         line.getOptionValue("config", "config/tracker.properties"));
 
     // storage
-    InfluxDBStorage storage = new InfluxDBStorage(config.getString("influxDB.url"),
-        config.getString("influxDB.username"), config.getString("influxDB.password"));
+    PostgreStorage storage = new PostgreStorage(config.getString("storage.url"),
+        config.getString("storage.username"), config.getString("storage.password"));
 
     // update
     if (line.hasOption("clear")) {
@@ -49,10 +48,8 @@ public class Tracker {
       String directory = line.getOptionValue("directory", "hkex/");
 
       // parser
-      ShanghaiConnectParser shParser = new ShanghaiConnectParser(directory,
-          config.getInt("parser.timeout"), storage);
-      ShenzhenConnectParser szParser = new ShenzhenConnectParser(directory,
-          config.getInt("parser.timeout"), storage);
+      ShanghaiConnectParser shParser = new ShanghaiConnectParser(directory, storage);
+      ShenzhenConnectParser szParser = new ShenzhenConnectParser(directory, storage);
 
       // parse date range and update storage
       Date startDate = DateUtils.parseDate(line.getOptionValue("start"), "yyyy/MM/dd");
@@ -60,7 +57,8 @@ public class Tracker {
       shParser.parseRangeAndUpdate(startDate, endDate);
       szParser.parseRangeAndUpdate(startDate, endDate);
 
-      logger.info("{} to {} data has been updated", line.getOptionValue("start"), line.getOptionValue("end"));
+      logger.info("{} to {} data has been updated", line.getOptionValue("start"),
+          line.getOptionValue("end"));
     }
   }
 

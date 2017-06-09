@@ -27,6 +27,7 @@ subprojects {
         // apache commons
         compile 'org.apache.commons:commons-lang3:3.5'
         compile 'commons-configuration:commons-configuration:1.10'
+        compile 'commons-cli:commons-cli:1.4'
 
         // logger
         compile 'org.slf4j:slf4j-api:1.7.25'

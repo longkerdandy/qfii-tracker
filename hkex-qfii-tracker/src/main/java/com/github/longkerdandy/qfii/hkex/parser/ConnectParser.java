@@ -1,7 +1,7 @@
 package com.github.longkerdandy.qfii.hkex.parser;
 
 import com.github.longkerdandy.qfii.hkex.model.StockShareholding;
-import com.github.longkerdandy.qfii.hkex.storage.InfluxDBStorage;
+import com.github.longkerdandy.qfii.hkex.storage.PostgreStorage;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
@@ -26,18 +26,18 @@ public abstract class ConnectParser {
 
   private static final Logger logger = LoggerFactory.getLogger(ConnectParser.class);
 
-  public void parseRangeAndUpdate(Date startDate, Date endDate, String directory, int timeout,
-      InfluxDBStorage storage)
+  private void parseRangeAndUpdate(Date startDate, Date endDate, String directory,
+      PostgreStorage storage)
       throws IOException, ParseException {
     while (startDate.before(endDate) || startDate.equals(endDate)) {
-      parseAndUpdate(startDate, directory, timeout, storage);
+      parseAndUpdate(startDate, directory, storage);
       startDate = DateUtils.addDays(startDate, 1);
     }
   }
 
-  public void parseAndUpdate(Date queryDate, String directory, int timeout, InfluxDBStorage storage)
+  private void parseAndUpdate(Date queryDate, String directory, PostgreStorage storage)
       throws IOException, ParseException {
-    List<StockShareholding> stockShareholdings = parse(queryDate, directory, timeout);
+    List<StockShareholding> stockShareholdings = parse(queryDate, directory);
     if (!stockShareholdings.isEmpty()) {
       if (stockShareholdings.get(0).getDate().equals(queryDate)) {
         update(stockShareholdings, storage);
@@ -53,7 +53,7 @@ public abstract class ConnectParser {
     }
   }
 
-  public List<StockShareholding> parse(Date queryDate, String directory, int timeout)
+  private List<StockShareholding> parse(Date queryDate, String directory)
       throws IOException, ParseException {
     // parse html from downloaded HKEX files
     File input = new File(directory + DateFormatUtils.format(queryDate, "yyyyMMdd") + ".html");
@@ -96,7 +96,7 @@ public abstract class ConnectParser {
     return stockShareholdings;
   }
 
-  public void update(List<StockShareholding> stockShareholdings, InfluxDBStorage storage) {
+  private void update(List<StockShareholding> stockShareholdings, PostgreStorage storage) {
     storage.saveShareholdings(stockShareholdings);
   }
 

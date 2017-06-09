@@ -1,6 +1,6 @@
 package com.github.longkerdandy.qfii.hkex.parser;
 
-import com.github.longkerdandy.qfii.hkex.storage.InfluxDBStorage;
+import com.github.longkerdandy.qfii.hkex.storage.PostgreStorage;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Date;
@@ -11,22 +11,22 @@ import java.util.Date;
 public class ShenzhenConnectParser extends ConnectParser {
 
   private final String directory;
-  private final int timeout;
-  private final InfluxDBStorage storage;
+  private final PostgreStorage storage;
 
-  public ShenzhenConnectParser(String directory, int timeout, InfluxDBStorage storage) {
+  public ShenzhenConnectParser(String directory, PostgreStorage storage) {
     this.directory = directory + "shenzhen/";
-    this.timeout = timeout;
     this.storage = storage;
   }
 
   public void parseRangeAndUpdate(Date startDate, Date endDate) throws IOException, ParseException {
-    parseRangeAndUpdate(startDate, endDate, this.directory, this.timeout, this.storage);
+    parseRangeAndUpdate(startDate, endDate, this.directory, this.storage);
   }
 
   @Override
   public String adjustCode(String code) {
-    if (code.startsWith("7")) {
+    if (code.startsWith("77")) {
+      code = code.replaceFirst("77", "300");
+    } else if (code.startsWith("7")) {
       code = code.replaceFirst("7", "00");
     }
     return code;

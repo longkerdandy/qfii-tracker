@@ -11,6 +11,11 @@
     <appender-ref ref="Console"/>
   </logger>
 
+  <!-- JDBC -->
+  <logger name="com.zaxxer.hikari" level="INFO" additivity="false">
+    <appender-ref ref="Console"/>
+  </logger>
+
   <root level="debug">
     <appender-ref ref="Console"/>
   </root>

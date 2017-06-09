@@ -1,6 +1,6 @@
 package com.github.longkerdandy.qfii.hkex.parser;
 
-import com.github.longkerdandy.qfii.hkex.storage.InfluxDBStorage;
+import com.github.longkerdandy.qfii.hkex.storage.PostgreStorage;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Date;
@@ -11,17 +11,15 @@ import java.util.Date;
 public class ShanghaiConnectParser extends ConnectParser {
 
   private final String directory;
-  private final int timeout;
-  private final InfluxDBStorage storage;
+  private final PostgreStorage storage;
 
-  public ShanghaiConnectParser(String directory, int timeout, InfluxDBStorage storage) {
+  public ShanghaiConnectParser(String directory, PostgreStorage storage) {
     this.directory = directory + "shanghai/";
-    this.timeout = timeout;
     this.storage = storage;
   }
 
   public void parseRangeAndUpdate(Date startDate, Date endDate) throws IOException, ParseException {
-    parseRangeAndUpdate(startDate, endDate, this.directory, this.timeout, this.storage);
+    parseRangeAndUpdate(startDate, endDate, this.directory, this.storage);
   }
 
   @Override
