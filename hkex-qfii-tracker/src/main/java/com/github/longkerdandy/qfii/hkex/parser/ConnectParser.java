@@ -26,7 +26,7 @@ public abstract class ConnectParser {
 
   private static final Logger logger = LoggerFactory.getLogger(ConnectParser.class);
 
-  private void parseRangeAndUpdate(Date startDate, Date endDate, String directory,
+  protected void parseRangeAndUpdate(Date startDate, Date endDate, String directory,
       PostgreStorage storage)
       throws IOException, ParseException {
     while (startDate.before(endDate) || startDate.equals(endDate)) {
