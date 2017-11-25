@@ -4,6 +4,7 @@ import com.github.longkerdandy.qfii.hkex.storage.PostgreStorage;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Date;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Shenzhen Connect Stock Parser
@@ -19,7 +20,7 @@ public class ShenzhenConnectParser extends ConnectParser {
   }
 
   public void parseRangeAndUpdate(Date startDate, Date endDate) throws IOException, ParseException {
-    parseRangeAndUpdate(startDate, endDate, this.directory, this.storage);
+    parseRangeAndUpdate(startDate, endDate, this.directory, this.storage, "shenzhen");
   }
 
   @Override
@@ -34,6 +35,6 @@ public class ShenzhenConnectParser extends ConnectParser {
 
   @Override
   public String adjustName(String name) {
-    return name;
+    return StringUtils.trim(name);
   }
 }

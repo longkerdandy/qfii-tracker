@@ -27,28 +27,29 @@ public abstract class ConnectParser {
   private static final Logger logger = LoggerFactory.getLogger(ConnectParser.class);
 
   protected void parseRangeAndUpdate(Date startDate, Date endDate, String directory,
-      PostgreStorage storage)
+      PostgreStorage storage, String market)
       throws IOException, ParseException {
     while (startDate.before(endDate) || startDate.equals(endDate)) {
-      parseAndUpdate(startDate, directory, storage);
+      parseAndUpdate(startDate, directory, storage, market);
       startDate = DateUtils.addDays(startDate, 1);
     }
   }
 
-  private void parseAndUpdate(Date queryDate, String directory, PostgreStorage storage)
+  private void parseAndUpdate(Date queryDate, String directory, PostgreStorage storage,
+      String market)
       throws IOException, ParseException {
     List<StockShareholding> stockShareholdings = parse(queryDate, directory);
     if (!stockShareholdings.isEmpty()) {
       if (stockShareholdings.get(0).getDate().equals(queryDate)) {
-        update(stockShareholdings, storage);
-        logger.info("{} data has been parsed and updated",
+        storage.saveShareholdings(stockShareholdings, market);
+        logger.info("Market {} date {} data has been parsed and updated", market,
             DateFormatUtils.format(queryDate, "yyyy-MM-dd"));
       } else {
-        logger.warn("{} data in an inconsistent state, operation skipped",
+        logger.warn("Market {} date {} data in an inconsistent state, operation skipped", market,
             DateFormatUtils.format(queryDate, "yyyy-MM-dd"));
       }
     } else {
-      logger.info("{} data not existed, operation skipped",
+      logger.info("Market {} date {} data not existed, operation skipped", market,
           DateFormatUtils.format(queryDate, "yyyy-MM-dd"));
     }
   }
@@ -94,10 +95,6 @@ public abstract class ConnectParser {
     }
 
     return stockShareholdings;
-  }
-
-  private void update(List<StockShareholding> stockShareholdings, PostgreStorage storage) {
-    storage.saveShareholdings(stockShareholdings);
   }
 
   public abstract String adjustCode(String code);

@@ -27,19 +27,38 @@ public class PostgreStorage {
   private void createTables() {
     try (Handle h = this.dbi.open()) {
       h.execute(
-          "create table if not exists hkex (id varchar(100) primary key, date timestamp with time zone, code varchar(100), name varchar(100), shareholding bigint, diff_shareholding bigint, percent real, diff_percent real)");
+          "create table if not exists stock_a (id varchar(100) primary key, date timestamp with time zone, code varchar(100), name varchar(100), shareholding bigint, diff_shareholding bigint, percent real, diff_percent real)");
       h.execute(
-          "create index if not exists diff_idx on hkex (date, code)");
+          "create index if not exists query_idx on stock_a (date, code)");
+      h.execute(
+          "create table if not exists stock_h (id varchar(100) primary key, date timestamp with time zone, code varchar(100), name varchar(100), shareholding bigint, diff_shareholding bigint, percent real, diff_percent real)");
+      h.execute(
+          "create index if not exists query_idx on stock_h (date, code)");
     }
   }
 
-  public void clear() {
+  public void clear(String market) {
     try (Handle h = this.dbi.open()) {
-      h.execute("truncate hkex");
+      if (market.equals("shanghai") || market.equals("shenzhen")) {
+        h.execute("truncate stock_a");
+      } else if (market.equals("hongkong")) {
+        h.execute("truncate stock_h");
+      } else if (market.equals("all")) {
+        h.execute("truncate stock_a");
+        h.execute("truncate stock_h");
+      }
     }
   }
 
-  public void saveShareholdings(List<StockShareholding> stockShareholdings) {
+  public void saveShareholdings(List<StockShareholding> stockShareholdings, String market) {
+    String table;
+    if (market.equals("shanghai") || market.equals("shenzhen")) {
+      table = "stock_a";
+    } else if (market.equals("hongkong")) {
+      table = "stock_h";
+    } else {
+      throw new IllegalArgumentException("Market is unrecognizable");
+    }
     try (Handle h = this.dbi.open()) {
       for (StockShareholding stockShareholding : stockShareholdings) {
         // calculate difference
@@ -47,7 +66,8 @@ public class PostgreStorage {
         float diffPercent = 0;
         if (!DateFormatUtils.format(stockShareholding.getDate(), "yyyyMMdd").equals("20170317")) {
           Map<String, Object> r = h.createQuery(
-              "select shareholding, percent from hkex where code = :code and date < :date order by date desc")
+              "select shareholding, percent from " + table
+                  + " where code = :code and date < :date order by date desc")
               .bind("date", stockShareholding.getDate())
               .bind("code", stockShareholding.getCode())
               .setFetchSize(1)
@@ -63,15 +83,16 @@ public class PostgreStorage {
         String id = DateFormatUtils.format(stockShareholding.getDate(), "yyyyMMdd")
             + "-" + stockShareholding.getCode();
         h.createStatement(
-            "insert into hkex(id, date, code, name, shareholding, diff_shareholding, percent, diff_percent) values (:id, :date, :code, :name, :shareholding, :diff_shareholding, :percent, :diff_percent)")
+            "insert into " + table
+                + "(id, date, code, name, shareholding, diff_shareholding, percent, diff_percent) values (:id, :date, :code, :name, :shareholding, :diff_shareholding, :percent, :diff_percent)")
             .bind("id", id)
             .bind("date", stockShareholding.getDate())
             .bind("code", stockShareholding.getCode())
             .bind("name", stockShareholding.getName())
             .bind("shareholding", stockShareholding.getShareholding())
             .bind("diff_shareholding", diffShareholding)
-            .bind("diff_percent", diffPercent)
             .bind("percent", stockShareholding.getPercent())
+            .bind("diff_percent", diffPercent)
             .execute();
       }
     }
