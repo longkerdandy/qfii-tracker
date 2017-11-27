@@ -5,6 +5,8 @@ import static org.quartz.JobBuilder.newJob;
 import static org.quartz.TriggerBuilder.newTrigger;
 
 import com.github.longkerdandy.qfii.hkex.quartz.TrackerJob;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -31,6 +33,7 @@ public class ScheduleService {
 
     // config file
     String config = line.getOptionValue("config", "config/tracker.properties");
+    assert Files.exists(Paths.get(config));
 
     // init scheduler
     SchedulerFactory sf = new StdSchedulerFactory();

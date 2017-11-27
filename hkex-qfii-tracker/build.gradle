@@ -4,7 +4,7 @@ mainClassName = "com.github.longkerdandy.qfii.hkex.ScheduleService"
 
 // If your application requires a specific set of JVM settings or system properties, you can configure the applicationDefaultJvmArgs property.
 // These JVM arguments are applied to the run task and also considered in the generated start scripts of your distribution.
-applicationDefaultJvmArgs = ["-Dlogback.configurationFile=config/logback.xml, -Dorg.terracotta.quartz.skipUpdateCheck=true"]
+applicationDefaultJvmArgs = ["-Dlogback.configurationFile=config/logback.xml", "-Dorg.terracotta.quartz.skipUpdateCheck=true"]
 
 dependencies {
     // logger
