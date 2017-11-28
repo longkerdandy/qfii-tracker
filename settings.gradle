@@ -1,3 +1,4 @@
 rootProject.name = 'qfii-tracker'
 include 'hkex-qfii-tracker'
+include 'hkex-dividend-tracker'
 

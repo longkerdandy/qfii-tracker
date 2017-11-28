@@ -40,7 +40,7 @@ public abstract class ConnectParser {
       throws IOException, ParseException {
     List<StockShareholding> stockShareholdings = parse(queryDate, directory);
     if (!stockShareholdings.isEmpty()) {
-      if (stockShareholdings.get(0).getDate().equals(queryDate)) {
+      if (DateUtils.isSameDay(stockShareholdings.get(0).getDate(), queryDate)) {
         storage.saveShareholdings(stockShareholdings, market);
         logger.info("Market {} date {} data has been parsed and updated", market,
             DateFormatUtils.format(queryDate, "yyyy-MM-dd"));
