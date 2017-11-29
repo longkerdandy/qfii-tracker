@@ -57,7 +57,7 @@ public abstract class ConnectParser {
   private List<StockShareholding> parse(Date queryDate, String directory)
       throws IOException, ParseException {
     // parse html from downloaded HKEX files
-    File input = new File(directory + DateFormatUtils.format(queryDate, "yyyyMMdd") + ".html");
+    File input = new File(directory, DateFormatUtils.format(queryDate, "yyyyMMdd") + ".html");
     if (!input.exists()) {
       return Collections.emptyList();
     }
