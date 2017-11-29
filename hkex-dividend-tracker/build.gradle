@@ -1,0 +1,25 @@
+apply plugin: 'application'
+
+mainClassName = "com.github.longkerdandy.qfii.hkex.ScheduleService"
+
+// If your application requires a specific set of JVM settings or system properties, you can configure the applicationDefaultJvmArgs property.
+// These JVM arguments are applied to the run task and also considered in the generated start scripts of your distribution.
+applicationDefaultJvmArgs = ["-Dlogback.configurationFile=config/logback.xml"]
+
+dependencies {
+    // logger
+    compile 'org.slf4j:jcl-over-slf4j:1.7.25'
+
+    // htmlunit
+    compile 'net.sourceforge.htmlunit:htmlunit:2.28'
+
+    // jsoup
+    compile 'org.jsoup:jsoup:1.10.2'
+
+    // jdbi
+    compile 'org.jdbi:jdbi:2.78'
+
+    // jdbc
+    compile 'org.postgresql:postgresql:42.1.1'
+    compile 'com.zaxxer:HikariCP:2.6.1'
+}
