@@ -42,7 +42,9 @@ public class TrackerJob implements Job {
     } catch (IOException e) {
       logger.warn("Error when download daily {} HKEX web pages.",
           DateFormatUtils.format(date, "yyyy/MM/dd"));
-      return;
+      JobExecutionException jee = new JobExecutionException(e);
+      jee.setRefireImmediately(true);
+      throw jee;
     }
 
     // parse downloaded pages

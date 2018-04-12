@@ -34,6 +34,8 @@ public class PostgreStorage {
           "create table if not exists stock_h (id varchar(100) primary key, date timestamp with time zone, code varchar(100), name varchar(100), shareholding bigint, diff_shareholding bigint, percent real, diff_percent real)");
       h.execute(
           "create index if not exists query_idx on stock_h (date, code)");
+      h.execute(
+          "create table if not exists white_list (code varchar(100) primary key)");
     }
   }
 
@@ -84,7 +86,15 @@ public class PostgreStorage {
             + "-" + stockShareholding.getCode();
         h.createStatement(
             "insert into " + table
-                + "(id, date, code, name, shareholding, diff_shareholding, percent, diff_percent) values (:id, :date, :code, :name, :shareholding, :diff_shareholding, :percent, :diff_percent)")
+                + " (id, date, code, name, shareholding, diff_shareholding, percent, diff_percent)"
+                + " values (:id, :date, :code, :name, :shareholding, :diff_shareholding, :percent, :diff_percent)"
+                + " on conflict (id)"
+                + " do update set"
+                + " name = :name,"
+                + " shareholding = :shareholding,"
+                + " diff_shareholding = :diff_shareholding,"
+                + " percent = :percent,"
+                + " diff_percent = :diff_percent")
             .bind("id", id)
             .bind("date", stockShareholding.getDate())
             .bind("code", stockShareholding.getCode())
@@ -93,6 +103,17 @@ public class PostgreStorage {
             .bind("diff_shareholding", diffShareholding)
             .bind("percent", stockShareholding.getPercent())
             .bind("diff_percent", diffPercent)
+            .execute();
+      }
+    }
+  }
+
+  public void applyWhiteList(List<String> codes) {
+    try (Handle h = this.dbi.open()) {
+      h.execute("truncate white_list");
+      for (String code : codes) {
+        h.createStatement("insert into white_list (code) values (:code)")
+            .bind("code", code)
             .execute();
       }
     }
